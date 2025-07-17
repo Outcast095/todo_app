@@ -1,14 +1,23 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
-import {ButtonAntd} from "./components/button/Button";
+import * as React from 'react';
 
-function App() {
-  return (
-    <div className="App">
-      <ButtonAntd/>
-    </div>
-  );
-}
+import { Routes, Route } from 'react-router-dom';
+import { Home } from './pages';
+import { UserPage } from './pages';
+import { NotFound } from './pages';
+import { MainLayout } from './layout/MainLayout';
 
-export default App;
+
+export const App = () => {
+
+    return (
+        <div className='wrapper'>
+            <Routes>
+                <Route path={'/'} element={<MainLayout/>}>
+                    <Route path={''} element={<Home/>} />
+                    <Route path={'/user'} element={<UserPage/>}/>
+                    <Route path={'*'} element={<NotFound />} />
+                </Route>
+            </Routes>
+        </div>
+    );
+};
