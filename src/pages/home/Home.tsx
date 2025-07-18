@@ -1,53 +1,61 @@
-import React, {useState} from 'react';
-import {Button, Flex, Form, Input,} from "antd";
+import React, {useEffect, useState} from 'react';
+import {Button, Flex, Form, Input, Spin,} from "antd";
 import type { FormProps } from 'antd';
 import s from './home.module.scss'
 import {Todo} from "../../features/todos/Todo";
+import { useAppDispatch } from '../../redux/store';
+import { useSelector } from 'react-redux';
+
+import { fetchMockTodos } from "../../redux/todos/asyncActions";
+import {selectTodo} from "../../redux/todos/selectors";
+import {LoadingOutlined} from "@ant-design/icons";
 
 type FieldType = {
     values?: string;
 };
 
 export const Home = () => {
+    const dispatch = useAppDispatch();
+    const { todos, loading, error } = useSelector(selectTodo);
+
 
     const [form] = Form.useForm();
-    const [todoList, setTodoList] = useState([
-        { id: 1, status: false, text: 'купить бананы' },
-        { id: 2, status: false, text: 'купить мандарины' },
-        { id: 3, status: false, text: 'купить виноград' },
-        { id: 4, status: false, text: 'купить абрикосы' },
-        { id: 5, status: false, text: 'купить яблоки' }
-    ]);
 
-    const handleStatusChange = (id: number, newStatus: boolean) => {
-        setTodoList(prev =>
-            prev.map(item =>
-                item.id === id ? { ...item, status: newStatus } : item
-            )
-        );
-    };
+
+
+    useEffect(()=> {
+        dispatch(fetchMockTodos())
+    }, [])
+
 
     const onFinish: FormProps<FieldType>['onFinish'] = (values) => {
-        console.log('Success:', values);
+        console.log('Success:', values.values);
         form.resetFields(); // ✅ Очистка всех полей
     };
 
-    const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (errorInfo) => {
-        console.log('Failed:', errorInfo);
-    };
-
+    if (loading) {
+        return <Spin indicator={<LoadingOutlined style={{ fontSize: 48 }} spin />} />
+    }
 
     return (
-        <div className={s.todos}>
+        <div className={s.home}>
 
-            <div>
+            <div className={s.inputWrapper}>
                 <Form
-                    className={s.inputWrapper}
+                    className={s.form}
                     form={form}
                     onFinish={onFinish}
-                    onFinishFailed={onFinishFailed}
                 >
-                    <Form.Item name="Input" className={s.input}>
+                    <Form.Item
+                        name="text"
+                        className={s.input}
+                        rules={[
+                            {
+                                required: true,
+                                message: 'Please input your text',
+                            },
+                        ]}
+                    >
                         <Input placeholder="новый todo"/>
                     </Form.Item>
 
@@ -60,12 +68,12 @@ export const Home = () => {
             </div>
 
             <Flex gap="middle" align="center" vertical>
-            {todoList.map(item => (
+            {todos.map(item => (
                 <Todo
                     key={item.id}
                     text={item.text}
                     status={item.status}
-                    onClick={(value) => handleStatusChange(item.id, value)}
+                    onClick={(value) => console.log(item.id, value)}
                 />
             ))}
                 </Flex>

@@ -25,7 +25,7 @@ export const Todo: FC<TodoProps> = ({text, status, onClick}) => {
 
                 <Checkbox onChange={onChange} checked={status}></Checkbox>
 
-                <p>{text}</p>
+                <p className={s.text}>{text}</p>
                 <Button type="primary" loading={false} iconPosition={'start'}>
                     удалить
                 </Button>

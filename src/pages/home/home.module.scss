@@ -1,15 +1,19 @@
 
 
-.todos {
+.home {
+  height: 100vh;
   display: flex;
 
   flex-direction: column;
   gap: 15px;
 }
 
-
-
 .inputWrapper {
+  margin-top: 30px;
+}
+
+
+.form {
   width: 100%;
   max-width: 500px;
   margin: 0 auto;
