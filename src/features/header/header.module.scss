@@ -11,7 +11,7 @@
   margin: 0  auto;
 
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
   padding: 15px 20px;
 }
@@ -54,5 +54,12 @@
     width: 100%;
     background-color: white;
   }
+}
+
+button.link {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
 }
 
