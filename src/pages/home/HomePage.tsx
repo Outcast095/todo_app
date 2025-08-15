@@ -125,7 +125,7 @@ export const HomePage = () => {
                                 id={item.id} 
                                 text={item.text} 
                                 status={item.status}
-                                onDelete={loadTodos}
+                                onUpdate={loadTodos}
                             />
                         ))
                     )}

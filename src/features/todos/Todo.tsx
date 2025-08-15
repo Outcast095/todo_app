@@ -3,7 +3,6 @@ import { Button, Checkbox, Flex } from 'antd';
 import { DeleteOutlined, LoadingOutlined } from '@ant-design/icons';
 import s from './todo.module.scss';
 import { useAuth } from "@clerk/clerk-react";
-import { useSupabaseClient } from '../../hooks/useSupabaseAuth';
 import { useDeleteTodo } from '../../hooks/useDeleteTodo';
 import { useUpdateTodoStatus } from '../../hooks/useUpdateTodoStatus';
 
@@ -11,10 +10,10 @@ interface TodoProps {
     id: string;
     text: string;
     status: boolean;
-    onDelete?: () => void;
+    onUpdate?: () => void;
 }
 
-export const Todo: React.FC<TodoProps> = ({ id, text, status, onDelete }) => {
+export const Todo: React.FC<TodoProps> = ({ id, text, status, onUpdate }) => {
     const { userId } = useAuth();
     const { deleteTodo, isLoading } = useDeleteTodo();
     const { updateTodoStatus, isLoading: isUpdating } = useUpdateTodoStatus();
@@ -22,8 +21,8 @@ export const Todo: React.FC<TodoProps> = ({ id, text, status, onDelete }) => {
     const handleDelete = async () => {
         if (userId) {
             const deletedId = await deleteTodo({ id, userId });
-            if (deletedId && onDelete) {
-                onDelete();
+            if (deletedId && onUpdate) {
+                onUpdate();
             }
         }
     };
@@ -31,8 +30,8 @@ export const Todo: React.FC<TodoProps> = ({ id, text, status, onDelete }) => {
     const onChange = async (e: any) => {
         if (userId) {
             const updatedTodo = await updateTodoStatus({ id, status: e.target.checked, userId });
-            if (updatedTodo && onDelete) {
-                onDelete();
+            if (updatedTodo && onUpdate) {
+                onUpdate();
             }
         }
     };
