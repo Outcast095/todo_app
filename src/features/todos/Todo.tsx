@@ -35,11 +35,12 @@ export const Todo: React.FC<TodoProps> = ({ id, text, status }) => {
     };
 
     return (
-        <Flex justify="space-between" align="center" className={s.todo}>
+        <Flex className={s.todo}>
             <Checkbox onChange={onChange} checked={status}>
                 <span className={status ? s.completed : ''}>{text}</span>
             </Checkbox>
             <Button
+                className={s.deleteButton}
                 type="primary"
                 icon={<DeleteOutlined style={{ fontSize: '16px', color: '#fff' }} />}
                 onClick={handleDelete}

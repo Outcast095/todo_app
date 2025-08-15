@@ -7,16 +7,14 @@
 
   padding: 10px 15px;
   border-radius: 10px;
-}
-
-.todo p {
-  color: #fff;
-  text-align: start;
-  margin: 0;
-  display: flex;
+  justify-content: space-between;
   align-items: center;
 }
 
 .todo span {
   color: #fff;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  text-align: start;
 }
