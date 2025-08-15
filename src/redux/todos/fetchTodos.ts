@@ -1,5 +1,5 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { supabase } from '../../lib/supabase';
+import { useSupabaseClient } from '../../hooks/useSupabaseAuth';
 
 interface Todo {
     id: string;
@@ -26,6 +26,11 @@ export const fetchTodos = createAsyncThunk<
     'todos/fetchTodos',
     async ({ userId, page, pageSize }, { rejectWithValue }) => {
         try {
+            const supabase = useSupabaseClient();
+            if (!supabase) {
+                return rejectWithValue('Supabase client not initialized');
+            }
+
             // Получаем общее количество записей
             const { count, error: countError } = await supabase
                 .from('todos')

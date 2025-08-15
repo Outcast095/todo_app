@@ -41,6 +41,7 @@ export const HomePage = () => {
 
     const onFinish: FormProps<FieldType>["onFinish"] = async (value) => {
        console.log(value.text)
+       console.log(userId)
         if (userId) {
             await dispatch(createTodo({ text: value.text, userId }));
             // После создания новой задачи, возвращаемся на первую страницу

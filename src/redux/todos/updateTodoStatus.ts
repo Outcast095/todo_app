@@ -1,5 +1,5 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { supabase } from '../../lib/supabase';
+import { useSupabaseClient } from '../../hooks/useSupabaseAuth';
 
 interface Todo {
     id: string;
@@ -14,6 +14,11 @@ export const updateTodoStatus = createAsyncThunk<
 >(
     'todos/updateTodoStatus',
     async ({ id, status, userId }, { rejectWithValue }) => {
+        const supabase = useSupabaseClient();
+        if (!supabase) {
+            return rejectWithValue('Supabase client not initialized');
+        }
+
         const { data, error } = await supabase
             .from('todos')
             .update({ status })
