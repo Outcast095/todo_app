@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { Button, Flex, Form, Input, Spin } from 'antd';
 import type { FormProps } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
@@ -8,6 +8,7 @@ import { Todo } from '../../features/todos/Todo';
 import { PaginationComponent } from '../../components/paginationComponent/PaginationComponent';
 import s from './home.module.scss';
 import { useAuth } from "@clerk/clerk-react";
+import { useSubscribeToTodos } from '../../hooks/useSubscribeToTodos';
 
 type FieldType = {
     text: string;
@@ -29,20 +30,24 @@ export const HomePage = () => {
     const [todos, setTodos] = useState<Todo[]>([]);
     const [totalCount, setTotalCount] = useState(0);
 
-
+    const loadTodos = useCallback(async () => {
+        if (userId) {
+            const result = await fetchTodos({ userId, page: currentPage, pageSize });
+            if (result) {
+                setTodos(result.todos);
+                setTotalCount(result.totalCount);
+            }
+        }
+    }, [userId, currentPage, pageSize, fetchTodos]);
 
     useEffect(() => {
-        const loadTodos = async () => {
-            if (userId) {
-                const result = await fetchTodos({ userId, page: currentPage, pageSize });
-                if (result) {
-                    setTodos(result.todos);
-                    setTotalCount(result.totalCount);
-                }
-            }
-        };
         loadTodos();
-    }, [userId, currentPage, pageSize, fetchTodos]);
+    }, [loadTodos]);
+
+    useSubscribeToTodos({
+        userId: userId || '',
+        onTodosChange: loadTodos
+    });
 
     const onFinish: FormProps<FieldType>["onFinish"] = async (value) => {
         if (userId) {
@@ -51,11 +56,7 @@ export const HomePage = () => {
                 if (currentPage !== 1) {
                     setCurrentPage(1);
                 } else {
-                    const result = await fetchTodos({ userId, page: 1, pageSize });
-                    if (result) {
-                        setTodos(result.todos);
-                        setTotalCount(result.totalCount);
-                    }
+                    loadTodos();
                 }
             }
         }
@@ -65,8 +66,6 @@ export const HomePage = () => {
     const handlePageChange = (page: number) => {
         setCurrentPage(page);
     };
-
-
 
     return (
         <div className={s.homePage}>
