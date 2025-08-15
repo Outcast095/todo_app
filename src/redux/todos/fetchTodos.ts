@@ -7,6 +7,11 @@ interface Todo {
     status: boolean;
 }
 
+interface SupabaseTodo extends Todo {
+    created_at: string;
+    userId: string;
+}
+
 interface FetchTodosParams {
     userId: string;
     page: number;
@@ -56,7 +61,7 @@ export const fetchTodos = createAsyncThunk<
                 return rejectWithValue(error.message);
             }
 
-            const todos = data.map((item: any) => ({
+            const todos = data.map((item: SupabaseTodo) => ({
                 id: item.id,
                 text: item.text,
                 status: item.status,
