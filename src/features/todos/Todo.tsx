@@ -40,8 +40,8 @@ export const Todo: React.FC<TodoProps> = ({ id, text, status }) => {
                 <span className={status ? s.completed : ''}>{text}</span>
             </Checkbox>
             <Button
-                type="text"
-                icon={<DeleteOutlined style={{ fontSize: '16px', color: '#ff4d4f' }} />}
+                type="primary"
+                icon={<DeleteOutlined style={{ fontSize: '16px', color: '#fff' }} />}
                 onClick={handleDelete}
             />
         </Flex>
