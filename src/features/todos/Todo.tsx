@@ -5,6 +5,7 @@ import s from './todo.module.scss';
 import { useAuth } from "@clerk/clerk-react";
 import { useSupabaseClient } from '../../hooks/useSupabaseAuth';
 import { useDeleteTodo } from '../../hooks/useDeleteTodo';
+import { useUpdateTodoStatus } from '../../hooks/useUpdateTodoStatus';
 
 interface TodoProps {
     id: string;
@@ -15,8 +16,8 @@ interface TodoProps {
 
 export const Todo: React.FC<TodoProps> = ({ id, text, status, onDelete }) => {
     const { userId } = useAuth();
-    const supabase = useSupabaseClient();
     const { deleteTodo, isLoading } = useDeleteTodo();
+    const { updateTodoStatus, isLoading: isUpdating } = useUpdateTodoStatus();
 
     const handleDelete = async () => {
         if (userId) {
@@ -28,7 +29,12 @@ export const Todo: React.FC<TodoProps> = ({ id, text, status, onDelete }) => {
     };
 
     const onChange = async (e: any) => {
-        
+        if (userId) {
+            const updatedTodo = await updateTodoStatus({ id, status: e.target.checked, userId });
+            if (updatedTodo && onDelete) {
+                onDelete();
+            }
+        }
     };
 
     return (
@@ -39,9 +45,9 @@ export const Todo: React.FC<TodoProps> = ({ id, text, status, onDelete }) => {
             <Button
                 className={s.deleteButton}
                 type="primary"
-                icon={isLoading ? <LoadingOutlined /> : <DeleteOutlined style={{ fontSize: '16px', color: '#fff' }} />}
+                icon={isLoading || isUpdating ? <LoadingOutlined /> : <DeleteOutlined style={{ fontSize: '16px', color: '#fff' }} />}
                 onClick={handleDelete}
-                disabled={isLoading}
+                disabled={isLoading || isUpdating}
             />
         </Flex>
     );
