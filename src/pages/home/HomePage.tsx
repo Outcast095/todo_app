@@ -8,7 +8,6 @@ import { Todo } from '../../features/todos/Todo';
 import { PaginationComponent } from '../../components/paginationComponent/PaginationComponent';
 import s from './home.module.scss';
 import { useAuth } from "@clerk/clerk-react";
-import { useSubscribeToTodos } from '../../hooks/useSubscribeToTodos';
 
 type FieldType = {
     text: string;
@@ -43,32 +42,6 @@ export const HomePage = () => {
     useEffect(() => {
         loadTodos();
     }, [loadTodos]);
-
-    const handleTodoChange = useCallback((event: { type: 'INSERT' | 'UPDATE' | 'DELETE'; todo?: Todo }) => {
-        switch (event.type) {
-            case 'DELETE':
-                console.log('Todo удален');
-                loadTodos();
-                break;
-            case 'UPDATE':
-                console.log('Todo обновлен:', event.todo);
-                loadTodos();
-                break;
-            case 'INSERT':
-                console.log('Добавлен новый todo:', event.todo);
-                if (currentPage === 1) {
-                    loadTodos();
-                } else {
-                    setCurrentPage(1);
-                }
-                break;
-        }
-    }, [loadTodos, currentPage]);
-
-    useSubscribeToTodos({
-        userId: userId || '',
-        onTodosChange: handleTodoChange
-    });
 
     const onFinish: FormProps<FieldType>["onFinish"] = async (value) => {
         if (userId) {
