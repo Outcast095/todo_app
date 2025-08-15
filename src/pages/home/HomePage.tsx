@@ -76,6 +76,8 @@ export const HomePage = () => {
             if (newTodo) {
                 if (currentPage !== 1) {
                     setCurrentPage(1);
+                } else {
+                    loadTodos();
                 }
             }
         }

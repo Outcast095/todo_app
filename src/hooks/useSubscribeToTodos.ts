@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
-import { supabase } from '../lib/supabase';
+import { useSupabaseClient } from './useSupabaseAuth';
+import { RealtimePostgresChangesPayload } from '@supabase/supabase-js';
 
 type TodoEvent = {
     type: 'INSERT' | 'UPDATE' | 'DELETE';
@@ -15,9 +16,19 @@ type SubscribeToTodosParams = {
     onTodosChange: (event: TodoEvent) => void;
 };
 
+type TodoPayload = {
+    id: string;
+    status: boolean;
+    text: string;
+    created_at: string;
+    userId: string;
+};
+
 export const useSubscribeToTodos = ({ userId, onTodosChange }: SubscribeToTodosParams) => {
+    const supabase = useSupabaseClient();
+
     useEffect(() => {
-        if (!userId) return;
+        if (!userId || !supabase) return;
 
         const subscription = supabase
             .channel('todos_channel')
@@ -28,7 +39,7 @@ export const useSubscribeToTodos = ({ userId, onTodosChange }: SubscribeToTodosP
                     table: 'todos',
                     filter: `userId=eq.${userId}` // Фильтруем только записи текущего пользователя
                 },
-                (payload) => {
+                (payload: RealtimePostgresChangesPayload<TodoPayload>) => {
                     const event: TodoEvent = {
                         type: payload.eventType as 'INSERT' | 'UPDATE' | 'DELETE',
                         // Для DELETE событий payload.new будет null, поэтому используем payload.old
@@ -45,5 +56,5 @@ export const useSubscribeToTodos = ({ userId, onTodosChange }: SubscribeToTodosP
         return () => {
             subscription.unsubscribe();
         };
-    }, [userId, onTodosChange]);
+    }, [userId, onTodosChange, supabase]);
 };
