@@ -85,8 +85,12 @@ export const HomePage = () => {
                     <Input placeholder="Введите задачу" className={s.input} />
                 </Form.Item>
 
-                <Button type="primary" htmlType="submit" style={{ marginLeft: '15px' }}>
-                    Добавить
+                <Button 
+                    type="primary" 
+                    htmlType="submit" 
+                    style={{ marginLeft: '15px' }}
+                >
+                    {isCreating ? <LoadingOutlined /> : 'Добавить'}
                 </Button>
             </Form>
 
