@@ -2,12 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { Button, Flex, Form, Input, Spin } from 'antd';
 import type { FormProps } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
-import { useAppDispatch } from '../../redux/store';
-import { useSelector } from 'react-redux';
-import { selectTodo } from '../../redux/todos/selectors';
+import { useFetchTodo } from '../../hooks/useFetchTodo';
 import { createTodo } from '../../redux/todos/createTodos';
-import { fetchTodos } from '../../redux/todos/fetchTodos';
-import { setCurrentPage } from '../../redux/todos/slice';
+import { useAppDispatch } from '../../redux/store';
 import { Todo } from '../../features/todos/Todo';
 import { PaginationComponent } from '../../components/paginationComponent/PaginationComponent';
 import s from './home.module.scss';
@@ -19,52 +16,57 @@ type FieldType = {
 
 interface Todo {
     id: string;
-    created_at: string;
     status: boolean;
     text: string;
-    userId: string;
 }
 
 export const HomePage = () => {
     const { userId } = useAuth();
     const dispatch = useAppDispatch();
-    const { todos, loading, currentPage, pageSize, totalCount } = useSelector(selectTodo);
+    const [currentPage, setCurrentPage] = useState(1);
+    const pageSize = 10;
     const [form] = Form.useForm();
+    const { fetchTodos, isLoading } = useFetchTodo();
+    const [todos, setTodos] = useState<Todo[]>([]);
+    const [totalCount, setTotalCount] = useState(0);
 
-    const { getToken } = useAuth();
+
 
     useEffect(() => {
-        if (userId) {
-            dispatch(fetchTodos({ userId, page: currentPage, pageSize }));
-        }
-    }, [userId, dispatch, currentPage, pageSize]);
+        const loadTodos = async () => {
+            if (userId) {
+                const result = await fetchTodos({ userId, page: currentPage, pageSize });
+                if (result) {
+                    setTodos(result.todos);
+                    setTotalCount(result.totalCount);
+                }
+            }
+        };
+        loadTodos();
+    }, [userId, currentPage, pageSize, fetchTodos]);
 
     const onFinish: FormProps<FieldType>["onFinish"] = async (value) => {
-       console.log(value.text)
-       console.log(userId)
         if (userId) {
             await dispatch(createTodo({ text: value.text, userId }));
             // После создания новой задачи, возвращаемся на первую страницу
             if (currentPage !== 1) {
-                dispatch(setCurrentPage(1));
+                setCurrentPage(1);
             } else {
-                dispatch(fetchTodos({ userId, page: 1, pageSize }));
+                const result = await fetchTodos({ userId, page: 1, pageSize });
+                if (result) {
+                    setTodos(result.todos);
+                    setTotalCount(result.totalCount);
+                }
             }
         }
         form.resetFields();
     };
 
     const handlePageChange = (page: number) => {
-        dispatch(setCurrentPage(page));
+        setCurrentPage(page);
     };
 
-    if (loading) {
-        return (
-            <div className={s.spinnerWrapper}>
-                <Spin indicator={<LoadingOutlined style={{ fontSize: 48 }} spin />} />
-            </div>
-        );
-    }
+
 
     return (
         <div className={s.homePage}>
@@ -90,11 +92,16 @@ export const HomePage = () => {
 
             <div className={s.todosContainer}>
                 <Flex vertical gap={16}>
-                    {loading ? (
+                    {isLoading ? (
                         <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} />
                     ) : (
                         todos.map((item) => (
-                            <Todo key={item.id} id={item.id} text={item.text} status={item.status} />
+                            <Todo 
+                                key={item.id} 
+                                id={item.id} 
+                                text={item.text} 
+                                status={item.status}
+                            />
                         ))
                     )}
                 </Flex>
@@ -106,7 +113,7 @@ export const HomePage = () => {
                     total={totalCount}
                     pageSize={pageSize}
                     onChange={handlePageChange}
-                    loading={loading}
+                    loading={isLoading}
                 />
             </div>
         </div>

@@ -1,7 +1,7 @@
 // features/todos/todosSlice.ts
 
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { fetchTodos } from './fetchTodos';
+
 import { createTodo } from './createTodos';
 import { updateTodoStatus } from './updateTodoStatus';
 import { deleteTodo } from './deleteTodos';
@@ -47,20 +47,7 @@ const todosSlice = createSlice({
         },
     },
     extraReducers: (builder) => {
-        // fetchTodos
-        builder.addCase(fetchTodos.pending, (state) => {
-            state.loading = true;
-            state.error = null;
-        });
-        builder.addCase(fetchTodos.fulfilled, (state, action) => {
-            state.loading = false;
-            state.todos = action.payload.todos;
-            state.totalCount = action.payload.totalCount;
-        });
-        builder.addCase(fetchTodos.rejected, (state, action) => {
-            state.loading = false;
-            state.error = action.payload as string;
-        });
+
 
         // createTodo
         builder.addCase(createTodo.pending, (state) => {

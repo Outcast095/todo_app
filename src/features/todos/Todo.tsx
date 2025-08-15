@@ -4,7 +4,7 @@ import { DeleteOutlined } from '@ant-design/icons';
 import { useAppDispatch } from '../../redux/store';
 import { deleteTodo } from '../../redux/todos/deleteTodos';
 import { updateTodoStatus } from '../../redux/todos/updateTodoStatus';
-import { fetchTodos } from '../../redux/todos/fetchTodos';
+
 import s from './todo.module.scss';
 import { useAuth } from "@clerk/clerk-react";
 import { useSupabaseClient } from '../../hooks/useSupabaseAuth';
@@ -15,7 +15,7 @@ interface TodoProps {
     status: boolean;
 }
 
-export const Todo: React.FC<TodoProps> = ({ id, text, status }) => {
+export const Todo: React.FC<TodoProps> = ({ id, text, status}) => {
     const { userId } = useAuth();
     const dispatch = useAppDispatch();
     const supabase = useSupabaseClient();
@@ -23,14 +23,12 @@ export const Todo: React.FC<TodoProps> = ({ id, text, status }) => {
     const handleDelete = async () => {
         if (userId && supabase) {
             await dispatch(deleteTodo({ id, userId }));
-            dispatch(fetchTodos({ userId, page: 1, pageSize: 5 }));
         }
     };
 
     const onChange = async (e: any) => {
         if (userId && supabase) {
             await dispatch(updateTodoStatus({ id, status: e.target.checked, userId }));
-            dispatch(fetchTodos({ userId, page: 1, pageSize: 5 }));
         }
     };
 
