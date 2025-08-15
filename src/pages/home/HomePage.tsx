@@ -3,7 +3,7 @@ import { Button, Flex, Form, Input, Spin } from 'antd';
 import type { FormProps } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
 import { useFetchTodo } from '../../hooks/useFetchTodo';
-import { useAppDispatch } from '../../redux/store';
+import { useCreateTodo } from '../../hooks/useCreateTodo';
 import { Todo } from '../../features/todos/Todo';
 import { PaginationComponent } from '../../components/paginationComponent/PaginationComponent';
 import s from './home.module.scss';
@@ -21,11 +21,11 @@ interface Todo {
 
 export const HomePage = () => {
     const { userId } = useAuth();
-    const dispatch = useAppDispatch();
     const [currentPage, setCurrentPage] = useState(1);
     const pageSize = 10;
     const [form] = Form.useForm();
     const { fetchTodos, isLoading } = useFetchTodo();
+    const { createTodo, isLoading: isCreating } = useCreateTodo();
     const [todos, setTodos] = useState<Todo[]>([]);
     const [totalCount, setTotalCount] = useState(0);
 
@@ -46,14 +46,16 @@ export const HomePage = () => {
 
     const onFinish: FormProps<FieldType>["onFinish"] = async (value) => {
         if (userId) {
-         
-            if (currentPage !== 1) {
-                setCurrentPage(1);
-            } else {
-                const result = await fetchTodos({ userId, page: 1, pageSize });
-                if (result) {
-                    setTodos(result.todos);
-                    setTotalCount(result.totalCount);
+            const newTodo = await createTodo({ text: value.text, userId });
+            if (newTodo) {
+                if (currentPage !== 1) {
+                    setCurrentPage(1);
+                } else {
+                    const result = await fetchTodos({ userId, page: 1, pageSize });
+                    if (result) {
+                        setTodos(result.todos);
+                        setTotalCount(result.totalCount);
+                    }
                 }
             }
         }
