@@ -10,16 +10,20 @@ interface TodoProps {
     id: string;
     text: string;
     status: boolean;
+    onDelete?: () => void;
 }
 
-export const Todo: React.FC<TodoProps> = ({ id, text, status}) => {
+export const Todo: React.FC<TodoProps> = ({ id, text, status, onDelete }) => {
     const { userId } = useAuth();
     const supabase = useSupabaseClient();
     const { deleteTodo, isLoading } = useDeleteTodo();
 
     const handleDelete = async () => {
         if (userId) {
-            await deleteTodo({ id, userId });
+            const deletedId = await deleteTodo({ id, userId });
+            if (deletedId && onDelete) {
+                onDelete();
+            }
         }
     };
 
