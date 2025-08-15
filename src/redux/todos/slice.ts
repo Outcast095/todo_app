@@ -2,9 +2,7 @@
 
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { createTodo } from './createTodos';
-import { updateTodoStatus } from './updateTodoStatus';
-import { deleteTodo } from './deleteTodos';
+
 
 // Тип одной задачи
 export interface Todo {
@@ -46,56 +44,7 @@ const todosSlice = createSlice({
             state.pageSize = action.payload;
         },
     },
-    extraReducers: (builder) => {
-
-
-        // createTodo
-        builder.addCase(createTodo.pending, (state) => {
-            state.loading = true;
-            state.error = null;
-        });
-        builder.addCase(createTodo.fulfilled, (state, action: PayloadAction<Todo>) => {
-            state.loading = false;
-            state.todos.unshift(action.payload); // добавляем в начало
-            state.totalCount += 1; // увеличиваем общий счетчик
-        })
-        builder.addCase(createTodo.rejected, (state, action) => {
-            state.loading = false;
-            state.error = action.payload as string;
-        });
-
-        // updateTodoStatus
-        builder.addCase(updateTodoStatus.pending, (state) => {
-            state.loading = true;
-            state.error = null;
-        });
-        builder.addCase(updateTodoStatus.fulfilled, (state, action: PayloadAction<Todo>) => {
-            state.loading = false;
-            const index = state.todos.findIndex(todo => todo.id === action.payload.id);
-            if (index !== -1) {
-                state.todos[index] = action.payload;
-            }
-        });
-        builder.addCase(updateTodoStatus.rejected, (state, action) => {
-            state.loading = false;
-            state.error = action.payload as string;
-        });
-
-        // deleteTodo
-        builder.addCase(deleteTodo.pending, (state) => {
-            state.loading = true;
-            state.error = null;
-        });
-        builder.addCase(deleteTodo.fulfilled, (state, action) => {
-            state.loading = false;
-            state.todos = state.todos.filter(todo => todo.id !== action.payload);
-            state.totalCount -= 1; // уменьшаем общий счетчик
-        });
-        builder.addCase(deleteTodo.rejected, (state, action) => {
-            state.loading = false;
-            state.error = action.payload as string;
-        });
-    },
+    extraReducers: (builder) => {},
 });
 
 export const { setCurrentPage, setPageSize } = todosSlice.actions;

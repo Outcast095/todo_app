@@ -3,7 +3,6 @@ import { Button, Flex, Form, Input, Spin } from 'antd';
 import type { FormProps } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
 import { useFetchTodo } from '../../hooks/useFetchTodo';
-import { createTodo } from '../../redux/todos/createTodos';
 import { useAppDispatch } from '../../redux/store';
 import { Todo } from '../../features/todos/Todo';
 import { PaginationComponent } from '../../components/paginationComponent/PaginationComponent';
@@ -47,8 +46,7 @@ export const HomePage = () => {
 
     const onFinish: FormProps<FieldType>["onFinish"] = async (value) => {
         if (userId) {
-            await dispatch(createTodo({ text: value.text, userId }));
-            // После создания новой задачи, возвращаемся на первую страницу
+         
             if (currentPage !== 1) {
                 setCurrentPage(1);
             } else {
