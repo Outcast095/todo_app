@@ -38,15 +38,15 @@ export const Todo: React.FC<TodoProps> = ({ id, text, status, onUpdate }) => {
 
     return (
         <Flex className={s.todo}>
-            <Checkbox onChange={onChange} checked={status}>
+            <Checkbox onChange={onChange} checked={status} disabled={isUpdating}>
                 <span className={status ? s.completed : ''}>{text}</span>
             </Checkbox>
             <Button
                 className={s.deleteButton}
                 type="primary"
-                icon={isLoading || isUpdating ? <LoadingOutlined /> : <DeleteOutlined style={{ fontSize: '16px', color: '#fff' }} />}
+                icon={isLoading ? <LoadingOutlined /> : <DeleteOutlined style={{ fontSize: '16px', color: '#fff' }} />}
                 onClick={handleDelete}
-                disabled={isLoading || isUpdating}
+                disabled={isLoading}
             />
         </Flex>
     );
