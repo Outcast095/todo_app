@@ -47,10 +47,11 @@ export const HomePage = () => {
         if (userId) {
             const newTodo = await createTodo({ text: value.text, userId });
             if (newTodo) {
-                if (currentPage !== 1) {
-                    setCurrentPage(1);
+                if (currentPage === 1) {
+                    setTodos(prevTodos => [newTodo, ...prevTodos]);
+                    setTotalCount(prev => prev + 1);
                 } else {
-                    loadTodos();
+                    setCurrentPage(1);
                 }
             }
         }
@@ -60,6 +61,14 @@ export const HomePage = () => {
     const handlePageChange = (page: number) => {
         setCurrentPage(page);
     };
+
+    const handleTodoUpdate = useCallback((updatedTodo: Todo) => {
+        setTodos(prevTodos =>
+            prevTodos.map(todo =>
+                todo.id === updatedTodo.id ? updatedTodo : todo
+            )
+        );
+    }, []);
 
     return (
         <div className={s.homePage}>
@@ -98,7 +107,7 @@ export const HomePage = () => {
                                 id={item.id} 
                                 text={item.text} 
                                 status={item.status}
-                                onUpdate={loadTodos}
+                                onUpdate={handleTodoUpdate}
                             />
                         ))
                     )}

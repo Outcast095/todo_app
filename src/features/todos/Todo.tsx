@@ -10,7 +10,7 @@ interface TodoProps {
     id: string;
     text: string;
     status: boolean;
-    onUpdate?: () => void;
+    onUpdate: (todo: { id: string; text: string; status: boolean }) => void;
 }
 
 export const Todo: React.FC<TodoProps> = ({ id, text, status, onUpdate }) => {
@@ -22,7 +22,7 @@ export const Todo: React.FC<TodoProps> = ({ id, text, status, onUpdate }) => {
         if (userId) {
             const deletedId = await deleteTodo({ id, userId });
             if (deletedId && onUpdate) {
-                onUpdate();
+                onUpdate({ id, text, status });
             }
         }
     };
@@ -31,7 +31,7 @@ export const Todo: React.FC<TodoProps> = ({ id, text, status, onUpdate }) => {
         if (userId) {
             const updatedTodo = await updateTodoStatus({ id, status: e.target.checked, userId });
             if (updatedTodo && onUpdate) {
-                onUpdate();
+                onUpdate(updatedTodo);
             }
         }
     };
