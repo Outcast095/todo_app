@@ -26,12 +26,13 @@ interface FetchTodosResponse {
 
 export const useFetchTodo = () => {
     const [isLoading, setIsLoading] = useState(false);
-    const supabase = useSupabaseClient();
+    const { supabaseClient: supabase } = useSupabaseClient();
 
     const fetchTodos = useCallback(
         async ({ userId, page, pageSize }: FetchTodosParams): Promise<FetchTodosResponse | undefined> => {
+            
             if (!supabase) {
-                errorNotification('Ошибка', 'Supabase client not initialized');
+                // Не показываем ошибку, если клиент еще загружается
                 return;
             }
 

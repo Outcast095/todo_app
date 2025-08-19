@@ -9,27 +9,30 @@ import {SignUpPage} from "./pages/signUp/SignUpPage";
 import {WelcomePage} from "./pages/welcomePage/welcomePage";
 import {Login} from "./components/login/Login";
 import {ProtectedRoute} from "./features/protectedRoute/ProtectedRoute";
+import {AuthProvider} from "./features/auth/AuthProvider";
 
 
 export const App = () => {
 
     return (
-        <div className='wrapper'>
-            <Routes>
-                <Route path={'/'} element={<MainLayout/>}>
-                    <Route path={''} element={<WelcomePage/>} />
-                    <Route path={'/signUp'} element={<SignUpPage/>} />
-                    <Route path={'/signIn'} element={<Login/>} />
-                    <Route path={'/home/:id'} element={<ProtectedRoute>
-                        <HomePage/>
-                    </ProtectedRoute> }/>
-                    <Route path={'/user'} element={<ProtectedRoute>
-                        <UserPage/>
-                    </ProtectedRoute>}/>
-                    <Route path={'*'} element={<NotFound />} />
-                </Route>
-            </Routes>
-        </div>
+        <AuthProvider>
+            <div className='wrapper'>
+                <Routes>
+                    <Route path={'/'} element={<MainLayout/>}>
+                        <Route path={''} element={<WelcomePage/>} />
+                        <Route path={'/signUp'} element={<SignUpPage/>} />
+                        <Route path={'/signIn'} element={<Login/>} />
+                        <Route path={'/home/:id'} element={<ProtectedRoute>
+                            <HomePage/>
+                        </ProtectedRoute> }/>
+                        <Route path={'/user'} element={<ProtectedRoute>
+                            <UserPage/>
+                        </ProtectedRoute>}/>
+                        <Route path={'*'} element={<NotFound />} />
+                    </Route>
+                </Routes>
+            </div>
+        </AuthProvider>
     );
 };
 

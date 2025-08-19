@@ -10,11 +10,11 @@ type UpdateTodoStatusParams = {
 
 export const useUpdateTodoStatus = () => {
     const [isLoading, setIsLoading] = useState(false);
-    const supabase = useSupabaseClient();
+    const { supabaseClient: supabase } = useSupabaseClient();
 
     const updateTodoStatus = async ({ id, status, userId }: UpdateTodoStatusParams) => {
         if (!supabase) {
-            errorNotification('Ошибка', 'Supabase client not initialized');
+            // Не показываем ошибку, если клиент еще загружается
             return;
         }
 

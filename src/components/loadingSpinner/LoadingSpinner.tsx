@@ -19,7 +19,11 @@ export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({ tip = 'Загр�
             backgroundColor: 'rgba(255, 255, 255, 0.8)',
             zIndex: 1000
         }}>
-            <Spin size="large" tip={tip} />
+            <Spin size="large" spinning={true}>
+                <div style={{ padding: '50px', textAlign: 'center' }}>
+                    {tip}
+                </div>
+            </Spin>
         </div>
     );
 };

@@ -9,11 +9,11 @@ type DeleteTodoParams = {
 
 export const useDeleteTodo = () => {
     const [isLoading, setIsLoading] = useState(false);
-    const supabase = useSupabaseClient();
+    const { supabaseClient: supabase } = useSupabaseClient();
 
     const deleteTodo = async ({ id, userId }: DeleteTodoParams) => {
         if (!supabase) {
-            errorNotification('Ошибка', 'Supabase client not initialized');
+            // Не показываем ошибку, если клиент еще загружается
             return;
         }
 

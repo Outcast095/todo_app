@@ -12,12 +12,12 @@ interface Todo {
 
 export const useCreateTodo = () => {
     const [isLoading, setIsLoading] = useState(false);
-    const supabase = useSupabaseClient();
+    const { supabaseClient: supabase } = useSupabaseClient();
 
     const createTodo = useCallback(
         async ({ text, userId }: { text: string; userId: string }): Promise<Todo | undefined> => {
             if (!supabase) {
-                errorNotification('Ошибка', 'Supabase client not initialized');
+                // Не показываем ошибку, если клиент еще загружается
                 return;
             }
 
