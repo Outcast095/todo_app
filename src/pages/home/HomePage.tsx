@@ -1,4 +1,7 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useCallback } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { setTodos, setTotalCount, setCurrentPage, addTodo } from '../../redux/todos/slice';
+import { RootState } from '../../redux/store';
 import { Button, Flex, Form, Input, Spin } from 'antd';
 import type { FormProps } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
@@ -13,62 +16,47 @@ type FieldType = {
     text: string;
 };
 
-interface Todo {
-    id: string;
-    status: boolean;
-    text: string;
-}
 
 export const HomePage = () => {
     const { userId } = useAuth();
-    const [currentPage, setCurrentPage] = useState(1);
-    const pageSize = 10;
+    const dispatch = useDispatch();
+    const { todos, totalCount, currentPage, pageSize } = useSelector((state: RootState) => state.todos);
     const [form] = Form.useForm();
     const { fetchTodos, isLoading } = useFetchTodo();
     const { createTodo, isLoading: isCreating } = useCreateTodo();
-    const [todos, setTodos] = useState<Todo[]>([]);
-    const [totalCount, setTotalCount] = useState(0);
 
     const loadTodos = useCallback(async () => {
         if (userId) {
             const result = await fetchTodos({ userId, page: currentPage, pageSize });
             if (result) {
-                setTodos(result.todos);
-                setTotalCount(result.totalCount);
+                dispatch(setTodos(result.todos));
+                dispatch(setTotalCount(result.totalCount));
             }
         }
-    }, [userId, currentPage, pageSize, fetchTodos]);
+    }, [userId, currentPage, pageSize, fetchTodos, dispatch]);
 
     useEffect(() => {
         loadTodos();
     }, [loadTodos]);
 
-    const onFinish: FormProps<FieldType>["onFinish"] = async (value) => {
+    const onFinish: FormProps<FieldType>["onFinish"] = async (values) => {
         if (userId) {
-            const newTodo = await createTodo({ text: value.text, userId });
-            if (newTodo) {
-                if (currentPage === 1) {
-                    setTodos(prevTodos => [newTodo, ...prevTodos]);
-                    setTotalCount(prev => prev + 1);
-                } else {
-                    setCurrentPage(1);
+            try {
+                const newTodo = await createTodo({ text: values.text, userId });
+                if (newTodo) {
+                    dispatch(addTodo(newTodo));
+                    form.resetFields();
                 }
+            } catch (error) {
+                console.error('Ошибка при создании задачи:', error);
             }
         }
-        form.resetFields();
     };
 
     const handlePageChange = (page: number) => {
-        setCurrentPage(page);
+        dispatch(setCurrentPage(page));
     };
 
-    const handleTodoUpdate = useCallback((updatedTodo: Todo) => {
-        setTodos(prevTodos =>
-            prevTodos.map(todo =>
-                todo.id === updatedTodo.id ? updatedTodo : todo
-            )
-        );
-    }, []);
 
     return (
         <div className={s.homePage}>
@@ -107,7 +95,6 @@ export const HomePage = () => {
                                 id={item.id} 
                                 text={item.text} 
                                 status={item.status}
-                                onUpdate={handleTodoUpdate}
                             />
                         ))
                     )}
