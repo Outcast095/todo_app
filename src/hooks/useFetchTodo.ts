@@ -1,5 +1,6 @@
 import { useCallback, useState } from 'react';
 import { useSupabaseClient } from './useSupabaseAuth';
+import { errorNotification } from '../utils/notification';
 
 interface Todo {
     id: string;
@@ -25,18 +26,17 @@ interface FetchTodosResponse {
 
 export const useFetchTodo = () => {
     const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
     const supabase = useSupabaseClient();
 
     const fetchTodos = useCallback(
         async ({ userId, page, pageSize }: FetchTodosParams): Promise<FetchTodosResponse | undefined> => {
             if (!supabase) {
-                setError('Supabase client not initialized');
+                errorNotification('Ошибка', 'Supabase client not initialized');
                 return;
             }
 
             setIsLoading(true);
-            setError(null);
+
 
             try {
                 // Получаем общее количество записей
@@ -46,7 +46,7 @@ export const useFetchTodo = () => {
                     .eq('userId', userId);
 
                 if (countError) {
-                    setError(countError.message);
+                    errorNotification('Ошибка', countError.message);
                     return;
                 }
 
@@ -62,7 +62,7 @@ export const useFetchTodo = () => {
                     .range(from, to);
 
                 if (error) {
-                    setError(error.message);
+                    errorNotification('Ошибка', error.message);
                     return;
                 }
 
@@ -77,7 +77,7 @@ export const useFetchTodo = () => {
                     totalCount: count || 0,
                 };
             } catch (err) {
-                setError('Failed to fetch todos');
+                errorNotification('Ошибка', 'Не удалось загрузить список задач');
             } finally {
                 setIsLoading(false);
             }
@@ -87,7 +87,6 @@ export const useFetchTodo = () => {
 
     return {
         fetchTodos,
-        isLoading,
-        error,
+        isLoading
     };
 };

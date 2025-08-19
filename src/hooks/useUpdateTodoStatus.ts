@@ -1,11 +1,6 @@
 import { useState } from 'react';
 import { useSupabaseClient } from './useSupabaseAuth';
-
-interface Todo {
-    id: string;
-    text: string;
-    status: boolean;
-}
+import { errorNotification } from '../utils/notification';
 
 type UpdateTodoStatusParams = {
     id: string;
@@ -15,18 +10,17 @@ type UpdateTodoStatusParams = {
 
 export const useUpdateTodoStatus = () => {
     const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
     const supabase = useSupabaseClient();
 
     const updateTodoStatus = async ({ id, status, userId }: UpdateTodoStatusParams) => {
         if (!supabase) {
-            setError('Supabase client not initialized');
+            errorNotification('Ошибка', 'Supabase client not initialized');
             return;
         }
 
         try {
             setIsLoading(true);
-            setError(null);
+
 
             const { data, error: updateError } = await supabase
                 .from('todos')
@@ -37,7 +31,7 @@ export const useUpdateTodoStatus = () => {
                 .single();
 
             if (updateError) {
-                setError(updateError.message);
+                errorNotification('Ошибка', updateError.message);
                 return;
             }
 
@@ -47,7 +41,7 @@ export const useUpdateTodoStatus = () => {
                 status: data.status
             };
         } catch (err) {
-            setError(err instanceof Error ? err.message : 'An error occurred while updating the todo status');
+            errorNotification('Ошибка', err instanceof Error ? err.message : 'Произошла ошибка при обновлении статуса задачи');
         } finally {
             setIsLoading(false);
         }
@@ -55,7 +49,6 @@ export const useUpdateTodoStatus = () => {
 
     return {
         updateTodoStatus,
-        isLoading,
-        error
+        isLoading
     };
 };

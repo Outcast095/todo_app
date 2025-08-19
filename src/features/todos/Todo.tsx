@@ -3,6 +3,7 @@ import { useDispatch } from 'react-redux';
 import { removeTodo, updateTodoStatus as updateTodoStatusAction } from '../../redux/todos/slice';
 import { Button, Checkbox, Flex } from 'antd';
 import { DeleteOutlined, LoadingOutlined } from '@ant-design/icons';
+import { errorNotification } from '../../utils/notification';
 
 import s from './todo.module.scss';
 import { useAuth } from "@clerk/clerk-react";
@@ -28,12 +29,12 @@ export const Todo: React.FC<TodoProps> = ({ id, text, status}) => {
             try {
                 const deletedId = await deleteTodo({ id, userId });
                 if (!deletedId) {
-                    console.error('Ошибка: Не удалось удалить задачу');
+                    errorNotification('Ошибка', 'Не удалось удалить задачу');
                     return;
                 }
                 dispatch(removeTodo(id));
             } catch (error) {
-                console.error('Ошибка при удалении задачи:', error);
+                errorNotification('Ошибка', 'Произошла ошибка при удалении задачи');
             }
         }
     };
@@ -47,7 +48,7 @@ export const Todo: React.FC<TodoProps> = ({ id, text, status}) => {
                     dispatch(updateTodoStatusAction({ id, status: e.target.checked }));
                 }
             } catch (error) {
-                console.error('Ошибка при обновлении статуса:', error);
+                errorNotification('Ошибка', 'Произошла ошибка при обновлении статуса задачи');
             }
         }
     };

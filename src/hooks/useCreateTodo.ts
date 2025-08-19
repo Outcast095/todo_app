@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import { useSupabaseClient } from './useSupabaseAuth';
+import { errorNotification } from '../utils/notification';
 
 interface Todo {
     id: string;
@@ -11,18 +12,17 @@ interface Todo {
 
 export const useCreateTodo = () => {
     const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
     const supabase = useSupabaseClient();
 
     const createTodo = useCallback(
         async ({ text, userId }: { text: string; userId: string }): Promise<Todo | undefined> => {
             if (!supabase) {
-                setError('Supabase client not initialized');
+                errorNotification('Ошибка', 'Supabase client not initialized');
                 return;
             }
 
             setIsLoading(true);
-            setError(null);
+
 
             try {
                 const { data, error } = await supabase
@@ -51,7 +51,7 @@ export const useCreateTodo = () => {
                     userId: data.userId
                 };
             } catch (err) {
-                setError(err instanceof Error ? err.message : 'Произошла ошибка при создании задачи');
+                errorNotification('Ошибка', err instanceof Error ? err.message : 'Произошла ошибка при создании задачи');
             } finally {
                 setIsLoading(false);
             }
@@ -61,7 +61,6 @@ export const useCreateTodo = () => {
 
     return {
         createTodo,
-        isLoading,
-        error,
+        isLoading
     };
 };

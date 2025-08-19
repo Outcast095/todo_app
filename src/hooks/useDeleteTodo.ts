@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useSupabaseClient } from './useSupabaseAuth';
+import { errorNotification } from '../utils/notification';
 
 type DeleteTodoParams = {
     id: string;
@@ -8,18 +9,17 @@ type DeleteTodoParams = {
 
 export const useDeleteTodo = () => {
     const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
     const supabase = useSupabaseClient();
 
     const deleteTodo = async ({ id, userId }: DeleteTodoParams) => {
         if (!supabase) {
-            setError('Supabase client not initialized');
+            errorNotification('Ошибка', 'Supabase client not initialized');
             return;
         }
 
         try {
             setIsLoading(true);
-            setError(null);
+
 
             const { error: deleteError } = await supabase
                 .from('todos')
@@ -28,13 +28,13 @@ export const useDeleteTodo = () => {
                 .eq('userId', userId);
 
             if (deleteError) {
-                setError(deleteError.message);
+                errorNotification('Ошибка', deleteError.message);
                 return;
             }
 
             return id;
         } catch (err) {
-            setError(err instanceof Error ? err.message : 'An error occurred while deleting the todo');
+            errorNotification('Ошибка', err instanceof Error ? err.message : 'Произошла ошибка при удалении задачи');
         } finally {
             setIsLoading(false);
         }
@@ -42,7 +42,6 @@ export const useDeleteTodo = () => {
 
     return {
         deleteTodo,
-        isLoading,
-        error
+        isLoading
     };
 };
