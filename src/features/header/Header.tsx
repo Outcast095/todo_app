@@ -5,7 +5,7 @@ import { NavLink } from 'react-router-dom';
 import { Avatar } from 'antd';
 import { SignUpComponent } from "../../components/signUp/SignUpComponent";
 import { Login } from "../../components/login/Login";
-import { SignOutButton, useClerk } from "@clerk/clerk-react";
+import { SignOutButton, useClerk, UserButton } from "@clerk/clerk-react";
 import { ModalWrapper } from '../modalWrapper/ModalWrapper';
 import { LogOutModalComponent } from '../../components/logOutModalComponent/LogOutModalComponent';
 
@@ -34,6 +34,9 @@ export const Header = () => {
     return (
         <div className={s.header}>
             <div className={s.container}>
+                <div className={s.avatarContainer}>
+                    <UserButton />
+                </div>
                 <ul className={s.menuItem}>
                     {menuItems.map((item, i) => (
                         <li key={i}>

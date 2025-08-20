@@ -11,9 +11,19 @@
   margin: 0  auto;
 
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   align-items: center;
   padding: 15px 20px;
+}
+
+.avatarContainer {
+  display: flex;
+  align-items: center;
+  
+  :global(.cl-userButtonBox) {
+    transform: scale(2);
+    margin: 0 5px;
+  }
 }
 
 .menuItem {

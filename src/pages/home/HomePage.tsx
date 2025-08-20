@@ -46,6 +46,16 @@ export const HomePage = () => {
                 if (newTodo) {
                     dispatch(addTodo(newTodo));
                     form.resetFields();
+                    
+                    // Проверяем текущую страницу и количество элементов
+                    if (currentPage !== 1) {
+                        // Если пользователь не на первой странице, перенаправляем на первую
+                        dispatch(setCurrentPage(1));
+                        // loadTodos будет вызван автоматически через useEffect
+                    } else if (todos.length >= pageSize) {
+                        // Если на первой странице и достигнут лимит, перезагружаем данные
+                        loadTodos();
+                    }
                 }
             } catch (error) {
                 console.error('Ошибка при создании задачи:', error);
